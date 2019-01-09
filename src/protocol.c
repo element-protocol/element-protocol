@@ -66,6 +66,7 @@ bool on_connect_req(connection_t *connection, buffer_t *buffer, va_list args)
   free(release_name_str);
 
   handle_packet(connection, PKT_DIRECTION_SEND, PKT_TYPE_CONNECT_RESP);
+  connection->authenticated = true;
   return true;
 }
 
@@ -95,6 +96,7 @@ bool on_connect_resp(connection_t *connection, buffer_t *buffer, va_list args)
   connection->keypair_info = crypto_generate_keypair();
   crypto_generate_nonce(connection->keypair_info);
 
+  connection->authenticated = true;
   handle_packet(connection, PKT_DIRECTION_SEND, PKT_TYPE_KEYPAIR_REQ);
   return true;
 }
@@ -129,7 +131,6 @@ bool on_keypair_req(connection_t *connection, buffer_t *buffer, va_list args)
   free(nonce);
 
   handle_packet(connection, PKT_DIRECTION_SEND, PKT_TYPE_KEYPAIR_RESP);
-  connection->authenticated = true;
   connection->encrypted = true;
   return true;
 }
@@ -156,7 +157,6 @@ bool on_keypair_resp(connection_t *connection, buffer_t *buffer, va_list args)
   free(their_public_key);
   free(their_private_key);
 
-  connection->authenticated = true;
   connection->encrypted = true;
   handle_packet(connection, PKT_DIRECTION_SEND, PKT_TYPE_PEERLIST_REQ);
   return true;
@@ -376,6 +376,16 @@ bool handle_packet_recv_authenticated(connection_t *connection, pkt_type_t pkt_t
   bool success = false;
   switch (pkt_type)
   {
+    case PKT_TYPE_KEYPAIR_REQ:
+    {
+      success = on_keypair_req(connection, buffer, args);
+      break;
+    }
+    case PKT_TYPE_KEYPAIR_RESP:
+    {
+      success = on_keypair_resp(connection, buffer, args);
+      break;
+    }
     case PKT_TYPE_PEERLIST_REQ:
     {
       success = on_peerlist_req(connection, buffer, args);
@@ -413,16 +423,6 @@ bool handle_packet_recv_unauthenticated(connection_t *connection, pkt_type_t pkt
     case PKT_TYPE_CONNECT_RESP:
     {
       success = on_connect_resp(connection, buffer, args);
-      break;
-    }
-    case PKT_TYPE_KEYPAIR_REQ:
-    {
-      success = on_keypair_req(connection, buffer, args);
-      break;
-    }
-    case PKT_TYPE_KEYPAIR_RESP:
-    {
-      success = on_keypair_resp(connection, buffer, args);
       break;
     }
     default:
