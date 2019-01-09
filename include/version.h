@@ -13,7 +13,7 @@ extern "C"
 #endif
 
 #define APPLICATION_NAME "element"
-#define APPLICATION_VERSION "1.0.0"
+#define APPLICATION_VERSION "1.0.1"
 #define APPLICATION_RELEASE_NAME "electrum"
 
 #ifdef __cplusplus
