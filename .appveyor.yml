@@ -2,8 +2,6 @@ install:
 # What is it with CMake and not detecting the right versions of libraries...
 - del C:\OpenSSL-Win64\lib\ssleay32.lib
 - del C:\OpenSSL-Win64\lib\libeay32.lib
-- set BOOST_ROOT=C:\Libraries\boost_1_66_0
-- set BOOST_LIBRARYDIR=%BOOST_ROOT%\lib64-msvc-14.0
 
 # Setup the submodules from their respective repositories...
 - git submodule init
