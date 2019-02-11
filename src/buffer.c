@@ -237,8 +237,9 @@ int64_t buffer_read_int64(buffer_t *buffer)
 
 void buffer_write_string(buffer_t *buffer, const char *string, int size)
 {
-  buffer_write_uint16(buffer, size + 64);
-  buffer_write(buffer, (const unsigned char*)string, size + 64);
+  int actual_size = sizeof(unsigned char*) + size;
+  buffer_write_uint16(buffer, actual_size);
+  buffer_write(buffer, (const unsigned char*)string, actual_size);
 }
 
 char* buffer_read_string(buffer_t *buffer)
